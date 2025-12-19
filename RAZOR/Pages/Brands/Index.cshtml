@@ -1,0 +1,196 @@
+@page
+
+@{
+  ViewData["Title"] = "Agregar Marca de Cerveza";
+}
+
+<div class="row">
+  <div class="col-12">
+    <h2 class="text-center">LISTADO DE MARCAS DE CERVEZA</h2>    
+  </div>
+
+  <div class="col-10">
+    <div class="table-responsive">
+      <table id="tBrand" class="table table-primary">
+        <thead>
+          <tr>
+            <th class="d-none">ID</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Eliminar</th>
+            <th class="d-none">version</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+    
+  </div>
+</div>
+
+@* modal para editar *@
+
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modificar marca</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="txtName">Nombre de la marca</label>
+        <input type="text" id="txtName">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="btnModificar">Grabar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@* modal para eliminar *@
+
+<div class="modal fade" id="deletedModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Eliminar Marca</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="pEliminar"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="btnEliminar">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script type="text/javascript">
+$(document).ready(function () {
+  //
+  var marca = {
+    BrandId: "",
+    Name:"",
+    VersionFila:""
+  };
+
+  //
+  cargarDatosMarcas();
+
+  // modal modificar
+  // 1. Capturamos el evento click en los enlaces con la clase 'editar'
+  $("#tBrand tbody").on("click", ".editar", function(e) {
+      // Prevenimos la acción por defecto del enlace (evita la navegación inmediata)
+      e.preventDefault();
+
+      // **PASO CLAVE:** Obtenemos la fila (<tr>) más cercana al botón que fue clickeado
+      let $fila = $(this).closest("tr");
+      
+      // 2. Buscamos el brandId en la primera celda oculta (indice 0)
+      // Ya que aplicamos la clase 'd-none' a la primera celda: <td class="d-none">...
+      marca.BrandId = $fila.children("td:first").text();
+      marca.VersionFila = $fila.children("td:eq(4)").text();
+      
+      // 3. Obtenemos el nombre (opcional, para confirmación)
+      // Asumiendo que el nombre está en la segunda columna (indice 1)
+      $("#txtName").val($fila.children("td:eq(1)").text());
+      
+      // --- LÓGICA DE EDICIÓN ---
+      // Aquí puedes, por ejemplo, abrir un modal de edición con el ID o
+      // navegar a la página de edición con el ID capturado:
+      // window.location.href = $(this).attr("href"); // Descomenta si deseas seguir la navegación del enlace original
+      
+      // Ejemplo de cómo navegar usando el ID capturado
+      // window.location.href = `/Brands/Edit?id=${brandId}`;
+
+      @* CON AJAX
+      $.ajax({
+            url: "http://localhost/brand", // Endpoint de edición
+            type: "PUT", // Método HTTP para actualización (lo más estándar)
+            contentType: "application/json", // Indica que estás enviando JSON
+            data: JSON.stringify(datosAEnviar), // Convierte el objeto JavaScript a cadena JSON
+            
+            // Función a ejecutar si la petición es exitosa
+            success: function(response) {
+                console.log("Edición exitosa:", response);
+                alert(`Marca con ID ${brandId} editada con éxito.`);
+                
+                // Opcional: Recargar la tabla o actualizar solo la fila afectada
+                // window.location.reload(); 
+            },
+            
+            // Función a ejecutar si la petición falla
+            error: function(xhr, status, error) {
+                console.error("Error al editar la marca:", status, error);
+                alert(`Hubo un error al intentar editar la marca. Estado: ${status}`);
+            }
+        }); *@
+
+  });
+
+  // modificar
+  $("#btnModificar").on("click", function() {
+    marca.Name = $("#txtName").val();
+    fetch("http://localhost:5241/api/brand", {
+      headers: {
+          'Accept' : 'application/json',
+          'Content-Type': 'application/json'
+      },
+      method: "PUT",
+      body: JSON.stringify(marca)
+    })
+    .then(response => {
+      if(response.ok) cargarDatosMarcas();
+      else alert("ocurrio un error...verifique");
+    })
+    .catch(error => console.error('Error fetching brand data:', error));
+  });
+
+  // modal eliminar
+  $("#tBrand tbody").on("click", ".eliminar", function(e) {
+    e.preventDefault();
+
+    let $fila = $(this).closest("tr"); 
+
+    marca.BrandId = $fila.children("td:first").text();
+    $("#pEliminar").html($fila.children("td:eq(1)").text());
+  });
+
+  // eliminar
+  $("#btnEliminar").on("click", function() {
+    fetch("http://localhost:5241/api/brand/Delete/" + marca.BrandId)
+    .then(response => {
+      if(response.ok) cargarDatosMarcas();
+    })
+    .catch(error => console.error('Error fetching brand data:', error));
+  });
+
+  // Cargar datos de marcas al cargar la página
+  function cargarDatosMarcas() {
+    fetch("http://localhost:5241/api/brand")
+    .then(response => response.json())
+    .then(data => {
+      $("#tBrand tbody").empty();
+      data.data.forEach(brand => {
+        let row = `<tr>
+                    <td class="d-none">${brand.brandId}</td>
+                    <td>${brand.name}</td>
+                    <td><a href="/Brands/Edit?id=${brand.brandId}" class="editar btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">Editar</a></td>
+                    <td><a href="/Brands/Delete?id=${brand.brandId}" class="eliminar btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletedModal">Eliminar</a></td>
+                    <td class="d-none">${brand.versionFila}</td>
+                  </tr>`;
+        $("#tBrand tbody").append(row);
+      });
+    })
+    .catch(error => console.error('Error fetching brand data:', error));
+  }
+});
+</script>
+}
