@@ -25,6 +25,7 @@ public class BrandController : ControllerBase
   }
 
   // listado de marcas
+  [HttpGet]
   public async Task<IActionResult> Index()
   {
     // mapeando a Brand, tambien se puede hacer sin mapeo de datos
@@ -37,6 +38,52 @@ public class BrandController : ControllerBase
                     };
 
     return Ok(result);
+  }
+
+  // listado de marcas con cervezas
+  [HttpGet("GetBrandsWithBeers")]
+  public async Task<IActionResult> GetBrandsWithBeers()
+  {
+    // 1. Diccionario para mantener rastro de las masrcas ya creadas
+    var brandDictionary = new Dictionary<Guid, Brand>();
+
+    var sql = @"
+        SELECT brand.BrandId, brand.Name, brand.UpdatedAt, brand.VersionFila, beer.BeerID, beer.Name, beer.Style, beer.BrandID
+        FROM Brand brand
+        LEFT JOIN Beer beer ON brand.BrandId = beer.BrandID";
+
+    var brands = await _connection.QueryAsync<Brand, Beer, Brand>(
+        sql, 
+        (brand, beer) => 
+        {
+            // 2. Intentamos obtener la marca del diccionario
+            if (!brandDictionary.TryGetValue(brand.BrandId, out var currentBrand))
+            {
+                currentBrand = brand;
+                currentBrand.Beers = new List<Beer>();
+                brandDictionary.Add(currentBrand.BrandId, currentBrand);
+            }
+
+            // 3. Si hay un producto en esta fila, lo añadimos a la lista de la categoría
+            if (beer != null)
+            {
+                currentBrand.Beers.Add(beer);
+            }
+
+            return currentBrand;
+        }, 
+        splitOn: "BeerId" // Divide las columnas donde empieza la tabla Beer
+    );
+
+    // 4. Obtenemos los valores únicos del diccionario
+    var result = brandDictionary.Values.ToList();
+
+    return Ok(new MessageResponse
+    {
+        Result = true,
+        Message = "Listado de Marcas con Cervezas",
+        Data = result
+    });
   }
 
   // retornar una marca
@@ -95,7 +142,7 @@ public class BrandController : ControllerBase
   [ProducesResponseType(StatusCodes.Status409Conflict)]
   public async Task<IActionResult> Update([FromBody] UpdateBrandRequest request)
   {
-    Thread.Sleep(10000);
+    //Thread.Sleep(10000);
     // 1. Validación básica
     if (request.VersionFila == null)
     {

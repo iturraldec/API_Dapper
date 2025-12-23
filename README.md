@@ -16,10 +16,7 @@ Asegurate de:
 - Cambiar la cadena de conexión a la base de datos en el archivo 'Controllers/BrandController.cs' con las credenciales correspondientes a tu manejador
 
 ## Uso
-Una vez descargada la aplicación podras ver y seleccionar las categorias de productos, los productos de una categoria determinada y agregar una producto determinado.
-    ![Categorias](/assets/images/img_2023-08-01_17-03-39.png)
-    ![Productos de la categoria](/assets/images/img_2023-08-01_17-04-01.png)
-    ![Producto agregado](/assets/images/img_2023-08-01_17-05-00.png)
+Una vez descargada la aplicación podras realizar un CRUD sobre las marcas de las cervezas y consultas de uno-muchos, muchos-uno.
     
 ## Licencia
 

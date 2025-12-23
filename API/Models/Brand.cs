@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace api_dapper_api.Models;
 
 public class Brand
@@ -10,4 +8,6 @@ public class Brand
   public DateTime? DeletedTimeUtc {get;set;}
   public bool IsDeleted {get;set;}
   public byte[]? VersionFila {get;set;}
+
+  public ICollection<Beer> Beers {get;set;} = new List<Beer>();
 }
