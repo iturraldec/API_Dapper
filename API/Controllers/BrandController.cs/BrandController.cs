@@ -26,6 +26,7 @@ public class BrandController : ControllerBase
 
   // listado de marcas
   [HttpGet]
+  [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MessageResponse))]
   public async Task<IActionResult> Index()
   {
     // mapeando a Brand, tambien se puede hacer sin mapeo de datos
@@ -42,6 +43,7 @@ public class BrandController : ControllerBase
 
   // listado de marcas con cervezas
   [HttpGet("GetBrandsWithBeers")]
+  [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MessageResponse))]
   public async Task<IActionResult> GetBrandsWithBeers()
   {
     // 1. Diccionario para mantener rastro de las masrcas ya creadas
@@ -79,17 +81,17 @@ public class BrandController : ControllerBase
     var result = brandDictionary.Values.ToList();
 
     return Ok(new MessageResponse
-    {
-        Result = true,
-        Message = "Listado de Marcas con Cervezas",
-        Data = result
-    });
+                  {
+                      Result = true,
+                      Message = "Listado de Marcas con Cervezas",
+                      Data = result
+                  });
   }
 
   // retornar una marca
-  [HttpGet("GetById/{Id}")]
+  [HttpGet("{Id}")]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
-  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MessageResponse))]
   public async Task<IActionResult> GetById([FromRoute] Guid Id)
   {
     var sql = @"SELECT * FROM Brand WHERE BrandId = @Id;";
@@ -114,7 +116,7 @@ public class BrandController : ControllerBase
 
   // insertar una marca
   [HttpPost]
-  [ProducesResponseType(StatusCodes.Status201Created)]
+  [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MessageResponse))]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<IActionResult> Create([FromBody] Brand brand)
   {

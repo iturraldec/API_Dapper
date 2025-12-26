@@ -16,6 +16,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddRouting(routing => routing.LowercaseUrls = true);
 
 var app = builder.Build();
 

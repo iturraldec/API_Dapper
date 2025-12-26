@@ -26,6 +26,7 @@ public class BeerController : ControllerBase
 
   // listado de marcas
   [HttpGet]
+  [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MessageResponse))]
   public async Task<IActionResult> Index()
   {
     // de muchos a uno
