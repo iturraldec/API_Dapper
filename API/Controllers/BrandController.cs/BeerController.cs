@@ -11,17 +11,12 @@ namespace api_dapper_api;
 [ApiController]
 public class BeerController : ControllerBase
 {
-  private readonly string _connectionString = @"Server=localhost,1433;
-                                                Database=Northwind;
-                                                User ID=sa;
-                                                Password=J1z01234_;
-                                                Encrypt=False;";
   private readonly SqlConnection _connection;
   
   //
-  public BeerController()
+  public BeerController(SqlConnection sqlConnection)
   {
-    _connection = new SqlConnection(_connectionString);
+    _connection = sqlConnection;
   }
 
   // listado de marcas

@@ -11,17 +11,12 @@ namespace api_dapper_api;
 [ApiController]
 public class BrandController : ControllerBase
 {
-  private readonly string _connectionString = @"Server=localhost,1433;
-                                                Database=Northwind;
-                                                User ID=sa;
-                                                Password=J1z01234_;
-                                                Encrypt=False;";
   private readonly SqlConnection _connection;
   
   //
-  public BrandController()
+  public BrandController(SqlConnection sqlConnection)
   {
-    _connection = new SqlConnection(_connectionString);
+    _connection = sqlConnection;
   }
 
   // listado de marcas
@@ -130,7 +125,7 @@ public class BrandController : ControllerBase
                     {
                       Result = true,
                       Message = "Marca creada",
-                      Data = brand
+                      Data = null
                     };
     
     return CreatedAtAction(nameof(GetById), new { Id = brand.BrandId }, result);
