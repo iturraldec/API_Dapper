@@ -5,7 +5,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
-namespace api_dapper_api;
+namespace api_dapper_api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

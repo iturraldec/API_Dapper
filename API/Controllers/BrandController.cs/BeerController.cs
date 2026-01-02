@@ -4,10 +4,12 @@ using api_dapper_api.Requests;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
-namespace api_dapper_api;
+namespace api_dapper_api.Controllers;
 
 [Route("api/[controller]")]
+[Authorize]
 [ApiController]
 public class BeerController : ControllerBase
 {
