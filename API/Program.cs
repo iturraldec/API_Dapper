@@ -2,13 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var MiPoliticaCORS = "_miPoliticaCORS";
 
 builder.Services.AddScoped<SqlConnection>(_ => new SqlConnection(connectionString));
-//builder.Services.AddSingleton<IConfiguration>(_ => builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
@@ -23,10 +23,9 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddRouting(routing => routing.LowercaseUrls = true);
 
-/////////// 3 SERVICIOS //////////////////
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -37,7 +36,8 @@ builder.Services.AddAuthentication(options =>
 {
   options.RequireHttpsMetadata = false; // en produccion se recomienda true
   options.SaveToken = true;
-  options.TokenValidationParameters = new TokenValidationParameters{
+  options.TokenValidationParameters = new TokenValidationParameters
+  {
     ValidIssuer = builder.Configuration["Jwt:Issuer"],
     ValidAudience = builder.Configuration["Jwt:Audience"],
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
@@ -48,8 +48,8 @@ builder.Services.AddAuthentication(options =>
     
   };
 });
+
 builder.Services.AddAuthorization();
-/////////// 3 //////////////////
 
 var app = builder.Build();
 
@@ -61,12 +61,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(MiPoliticaCORS);
-
-/////////// 4 //////////////////
 app.UseAuthentication();
 app.UseAuthorization();
-/////////// 4 //////////////////
-
 app.MapControllers();
 
 app.Run();

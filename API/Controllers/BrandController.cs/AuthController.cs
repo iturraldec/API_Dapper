@@ -45,14 +45,15 @@ public class AuthController : ControllerBase
         Expires = tokenExpiryTimeStap,
         Issuer = issuer,
         Audience = audience,
-        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),SecurityAlgorithms.HmacSha256Signature)
+        SigningCredentials = new SigningCredentials(
+                                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                                SecurityAlgorithms.HmacSha256Signature)
       };
 
       var tokenHandler = new JwtSecurityTokenHandler();
       var securityToken = tokenHandler.CreateToken(tokenDescriptor);
       var accessToken = tokenHandler.WriteToken(securityToken);
-
-      LoginResponse response = new LoginResponse
+      var response = new LoginResponse
       {
         AccessToken = accessToken,
         ExpiresIn = (int)tokenExpiryTimeStap.Subtract(DateTime.UtcNow).TotalSeconds
