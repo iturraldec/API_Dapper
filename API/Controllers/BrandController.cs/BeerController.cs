@@ -1,6 +1,5 @@
 using api_dapper_api.Models;
 using api_dapper_api.Models.Responses;
-using api_dapper_api.Requests;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;

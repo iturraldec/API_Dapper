@@ -2,11 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace api_dapper_api.Requests
 {
-  public class LoginRequest
+  public class UserDTO
   {
-    [Required]
-    public string Username { get; set; } = null!;
-    [Required]
+    public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
   }
 }
