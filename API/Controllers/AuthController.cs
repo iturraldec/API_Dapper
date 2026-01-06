@@ -74,6 +74,7 @@ public class AuthController : ControllerBase
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<IActionResult> Authenticate([FromBody] UserDTO request)
   {
+  
     // validar usuario  y clave
     var response = new MessageResponse();
 
@@ -100,6 +101,7 @@ public class AuthController : ControllerBase
       return BadRequest(response);
     }
     
+    // clave correcta
     // generar token
     var issuer = _configuration["Jwt:Issuer"];
     var audience = _configuration["Jwt:Audience"];
